@@ -14,7 +14,7 @@ const signupschema = zod.object({
     lastName: zod.string()
 });
 
-router.get("/signup",async (req, res) => {
+router.post("/signup",async (req, res) => {
     const body = req.body;
     const success = signupschema.safeParse(body);
     if (!success) {
