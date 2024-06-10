@@ -1,9 +1,8 @@
-import { Heading } from "./heading";
-import { Subheading } from "./subheading";
-import { InputBox } from "./inputbox";
-import { BottomFooter } from "./bottomfooter";
-import { Bottombutton } from "./bottombutton";
-
+import { Bottombutton } from "../components/bottombutton";
+import { BottomFooter } from "../components/bottomfooter";
+import { Heading } from "../components/heading";
+import { InputBox } from "../components/inputbox";
+import { Subheading } from "../components/subheading";
 
 export const Signup = () => {
     return <div className="bg-slate-800 h-screen flex justify-center">

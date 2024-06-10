@@ -1,6 +1,7 @@
-import { Bottombutton } from "./bottombutton";
-import { Heading } from "./heading";
-import { InputBox } from "./inputbox";
+import { Bottombutton } from "../components/bottombutton";
+import { BottomFooter } from "../components/bottomfooter";
+import { Heading } from "../components/heading";
+import { InputBox } from "../components/inputbox";
 
 export function Signin() {
     return (
@@ -22,6 +23,7 @@ export function Signin() {
                         <InputBox placeholder="sample@gmail.com" label={"Email"} />
                         <InputBox placeholder="123456" label={"Password"} />
                         <Bottombutton label={"Sign in"} />
+                        <BottomFooter label={"Don't have an account?"} buttonText={"Sign up"} to={"/signup"} />
                     </div>
                 </div>
             </div>
