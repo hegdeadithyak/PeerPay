@@ -3,7 +3,7 @@ const zod = require("zod");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const { User,Account } = require("../db");
-const jwtsecret = require("../config");
+const jwtsecret = "eyJhbGciOiJIUzI1NiJ9.eyJSb2xlIjoiQWRtaW4iLCJJc3N1ZXIiOiJJc3N1ZXIiLCJVc2VybmFtZSI6IkphdmFJblVzZSIsImV4cCI6MTcxNzkyMTI1MSwiaWF0IjoxNzE3OTIxMjUxfQ.ylhvi22CC6A0EUHrSnLWtcnR1yv1Kye9O4vgI1dn0jc";
 const {authmiddleware} = require("../middleware.js")
 
 
@@ -23,13 +23,13 @@ router.post("/signup",async (req, res) => {
         })
     }
 
-    const existinguser  = User.findOne({
+    const existinguser = await User.findOne({
         username: body.username
     });
-    
+    console.log(existinguser._id);
     if(existinguser._id){
-        return res.json({
-            message: "Email already exists"
+        return res.status(411).json({
+            message: "Email already taken/Incorrect inputs"
         })
     }
 
@@ -42,7 +42,7 @@ router.post("/signup",async (req, res) => {
 
     const userid = user._id;
     await Account.create({
-        userid,
+        userId : userid,
         balance: 1 + Math.random() * 10000
     })
 
@@ -68,14 +68,14 @@ router.post("/signin",async (req,res) => {
         })
     }
 
-    const user = User.findOne({
+    const user = await User.findOne({
         username : body.username,
         password : body.password
     })
 
     if(user){
         const token = jwt.sign({ id: user._id }, jwtsecret);
-        return res.json({
+        return res.status(200).json({
             message: "Signin success",
             token : token
         })
