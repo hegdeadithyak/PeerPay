@@ -18,6 +18,10 @@ To set up and run the project locally, follow these steps:
 3. Install the required dependencies with `npm install`.
 4. Start the development server with `npm start`.
 
+## To do
+
+- [ ] Add Backend for DashBoard such that after signup and signin user should be redirected to Dashboard along with his friend and past transactions.
+
 ## Usage
 
 Once the server is running, you can navigate to `http://localhost:5174` in your web browser to view the application.
