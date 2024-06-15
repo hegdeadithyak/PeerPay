@@ -13,7 +13,7 @@ export function Landing() {
                     </nav>
                 </div>
             </header>
-            <Section head="Send Money Instantly" subhead="Send money to friends and family instantly with Peer Pay." button="GetStarted Now" button_directs="/signup" />
+            <Section head="Send Money Instantly" subhead="Send money to friends and family instantly with Peer Pay." button="Get Started Now" button_directs="/signup" />
             <section id="features" className="features py-20 bg-gray-100">
                 <div className="container mx-auto px-4 text-center">
                     <h2 className="text-3xl font-bold mb-6">Features</h2>
