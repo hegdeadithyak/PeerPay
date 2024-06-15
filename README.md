@@ -25,7 +25,3 @@ Once the server is running, you can navigate to `http://localhost:5174` in your 
 ## Contributing
 
 Contributions are welcome! Please read the contributing guidelines before getting started.
-
-## License
-
-This project is licensed under the terms of the MIT license.
