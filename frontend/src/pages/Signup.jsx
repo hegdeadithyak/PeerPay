@@ -15,43 +15,90 @@ export const Signup = () => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  return <div className="bg-slate-800 h-screen flex justify-center">
-    <div className="flex flex-col justify-center">
-      <div className="rounded-lg bg-white w-100 text-center p-2 h-max px-4">
-        <Heading label={"Sign up"} />
-        <Subheading label={"Enter your infromation to create an account"} />
-        <InputBox onChange={e => {
-          setUsername(e.target.value);
-        }} placeholder="adithyahegdek" label={"UserName"} />
+  
+  const handleSignup = async () => {
+    try {
+      const payload = {
+        username,
+        firstName,
+        lastName,
+        email,
+        password,
+      };
 
-        <InputBox onChange={e => {
-          setFirstName(e.target.value);
-        }} placeholder="adithya" label={"First Name"} />
-        <InputBox onChange={e => {
-          setLastName(e.target.value);
-        }} placeholder="hegde" label={"Last Name"} />
-        <InputBox onChange={e => {
-          setEmail(e.target.value);
-        }} placeholder="sample@gmail.com" label={"Email"} />
-        <InputBox onChange={e => {
-          setPassword(e.target.value);
-        }} placeholder="123456" label={"Password"} />
-        <div className="pt-4">
-          <Bottombutton onClick={async () => {
-            const response = await axios.post("http://localhost:3000/api/v1/user/signup", {
-              username: username,
-              firstName: firstName,
-              lastName: lastName,
-              email: email,
-              password: password
-            });
-            localStorage.setItem("token", response.data.token);
-            navigate("/dashboard");
-          }
-          } label={"Sign up"} />
+      // Convert payload to JSON string
+      const payloadString = JSON.stringify(payload);
+
+      const response = await axios.post(
+        "http://localhost:3000/api/v1/user/signup",
+        payloadString,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      
+      console.log(response.data);
+      if (!response.data.success) {
+        alert(response.data.message);
+        return;
+      }
+      localStorage.setItem("token", response.data.token);
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Error during signup:", error);
+      alert("Signup failed. Please try again.");
+    }
+  };
+
+  return (
+    <div className="bg-slate-800 h-screen flex justify-center">
+      <div className="flex flex-col justify-center">
+        <div className="rounded-lg bg-white w-100 text-center p-2 h-max px-4">
+          <Heading label={"Sign up"} />
+          <Subheading label={"Enter your information to create an account"} />
+          <InputBox
+            onChange={(e) => {
+              setUsername(e.target.value);
+            }}
+            placeholder="adithyahegdek"
+            label={"UserName"}
+          />
+          <InputBox
+            onChange={(e) => {
+              setFirstName(e.target.value);
+            }}
+            placeholder="adithya"
+            label={"First Name"}
+          />
+          <InputBox
+            onChange={(e) => {
+              setLastName(e.target.value);
+            }}
+            placeholder="hegde"
+            label={"Last Name"}
+          />
+          <InputBox
+            onChange={(e) => {
+              setEmail(e.target.value);
+            }}
+            placeholder="sample@gmail.com"
+            label={"Email"}
+          />
+          <InputBox
+            onChange={(e) => {
+              setPassword(e.target.value);
+            }}
+            placeholder="123456"
+            label={"Password"}
+          />
+          <div className="pt-4">
+            <Bottombutton onClick={handleSignup} label={"Sign up"} />
+          </div>
+          <BottomFooter label={"Already have an account?"} buttonText={"Sign in"} to={"/signin"} />
         </div>
-        <BottomFooter label={"Already have an account?"} buttonText={"Sign in"} to={"/signin"} />
       </div>
     </div>
-  </div>
-}
+  );
+};
