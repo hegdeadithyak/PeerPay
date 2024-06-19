@@ -10,34 +10,16 @@ import {useNavigate} from "react-router-dom";
 
 export function Dashboard() {
     const [user, setUser] = useState(null);
+    const [balance, setBalance] = useState(0);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                const response = await axios.get("http://localhost:3000/api/v1/user/", {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`
-                    }
-                });
-                setUser(response.data);
-            } catch (error) {
-                if (error.response && error.response.status === 403) {
-                    alert("Please login to continue");
-                    navigate("/sigin");
-                }
-            }
-        };
-
-        fetchUser();
-    }, [navigate]);
-
+    
     // Render user information and friends' IDs
     return (
         <div className="bg-black h-screen">
             <div className="bg-gray-100 h-screen m-5 p-5">
                 <Appbar />
-                <Balance value={1000} />
+                <Balance value={balance} />
                 {user && (
                     <div>
                         <h2>{user.username}</h2>

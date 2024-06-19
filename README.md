@@ -11,7 +11,7 @@ The project is structured into two main directories: `pages` and `components`.
 
 ## To do
 
-- [ ] Add Backend for DashBoard such that after signup and signin user should be redirected to Dashboard along with his friend and past transactions.
+- [ ] Dashboard to be fixed,One approach can be storing the UserId along with Token for searching it in the data base.
 
 ## Usage
 
