@@ -9,15 +9,6 @@ The project is structured into two main directories: `pages` and `components`.
 - `pages`: This directory contains the different pages of the application. Currently, it includes `Signup` and `Signin` pages.
 - `components`: This directory contains reusable components used across different pages. Currently, it includes a `Bottombutton` component.
 
-## Setup and Installation
-
-To set up and run the project locally, follow these steps:
-
-1. Clone the repository to your local machine.
-2. Navigate to the project directory.
-3. Install the required dependencies with `npm install`.
-4. Start the development server with `npm start`.
-
 ## To do
 
 - [ ] Add Backend for DashBoard such that after signup and signin user should be redirected to Dashboard along with his friend and past transactions.
