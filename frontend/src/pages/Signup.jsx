@@ -17,38 +17,21 @@ export const Signup = () => {
 
   
   const handleSignup = async () => {
-    try {
-      const payload = {
-        username,
-        firstName,
-        lastName,
-        email,
-        password,
-      };
-
-      // Convert payload to JSON string
-      const payloadString = JSON.stringify(payload);
-
-      const response = await axios.post(
-        "http://localhost:3000/api/v1/user/signup",
-        payloadString,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      
-      console.log(response.data);
-      if (!response.data.success) {
-        alert(response.data.message);
-        return;
-      }
+    try{
+      const response = await axios.post("http://localhost:3000/api/v1/user/signup",{},{params: {
+        username: username,
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        password: password
+      }});
       localStorage.setItem("token", response.data.token);
       navigate("/dashboard");
-    } catch (error) {
-      console.error("Error during signup:", error);
-      alert("Signup failed. Please try again.");
+    }
+    catch (error) {
+      if (error.response.status === 411) {
+        alert("Email already taken/Incorrect inputs");
+      }
     }
   };
 

@@ -1,20 +1,60 @@
+import axios from "axios";
 import { Appbar } from "../components/AppBar";
 import { Balance } from "../components/Balance";
 import { Bottombutton } from "../components/bottombutton";
 import { User } from "../components/users";
+import { useEffect, useState } from "react";
+import {useNavigate} from "react-router-dom";
+
+// other imports...
 
 export function Dashboard() {
+    const [user, setUser] = useState(null);
+    const navigate = useNavigate();
 
-    return <>
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const response = await axios.get("http://localhost:3000/api/v1/user/", {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
+                });
+                setUser(response.data);
+            } catch (error) {
+                if (error.response && error.response.status === 403) {
+                    alert("Please login to continue");
+                    navigate("/sigin");
+                }
+            }
+        };
+
+        fetchUser();
+    }, [navigate]);
+
+    // Render user information and friends' IDs
+    return (
         <div className="bg-black h-screen">
             <div className="bg-gray-100 h-screen m-5 p-5">
                 <Appbar />
                 <Balance value={1000} />
+                {user && (
+                    <div>
+                        <h2>{user.username}</h2>
+                        <h3>Friends:</h3>
+                        <ul>
+                            {user.friends.map(friendId => (
+                                <li key={friendId}>{friendId}</li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
                 <User />
-                <div className="flex justify-end mt-8 mr-5">
-                    <Bottombutton label="Add Friends" />
-                </div>
+                <Bottombutton label="Logout" onClick={() => {
+                    localStorage.removeItem("token");
+                    navigate("/signin");
+                }} />
             </div>
         </div>
-    </>
+    );
 }
