@@ -2,10 +2,12 @@ const express = require('express');
 const zod = require("zod");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
-const { User,Account } = require("../db");
 const jwtsecret = "eyJhbGciOiJIUzI1NiJ9.eyJSb2xlIjoiQWRtaW4iLCJJc3N1ZXIiOiJJc3N1ZXIiLCJVc2VybmFtZSI6IkphdmFJblVzZSIsImV4cCI6MTcxNzkyMTI1MSwiaWF0IjoxNzE3OTIxMjUxfQ.ylhvi22CC6A0EUHrSnLWtcnR1yv1Kye9O4vgI1dn0jc";
 const {authmiddleware} = require("../middleware.js")
+const {PrismaClient} = require("@prisma/client");
 
+
+const prisma = new PrismaClient();
 
 const signupschema = zod.object({
     username: zod.string().email(),
@@ -16,31 +18,43 @@ const signupschema = zod.object({
 
 router.post("/signup",async (req, res) => {
     const body = req.body;
+    console.log(body);
     const success = signupschema.safeParse(body);
     if (!success) {
         return res.json({
-            message: "Email already exists"
+            message: "Invalid Email"
         })
     }
-
-    const existinguser = await User.findOne({
-        username: req.body.username
-    });
+    console.log(req.body.email);
+    const existinguser = await prisma.User.findUnique({
+        where: {
+          email: req.body.email
+        },
+        select: {
+          userid: true
+        }
+      });
     
-    if(existinguser && existinguser._id){
+    if(existinguser){
         return res.status(411).json({
             message: "Email already taken/Incorrect inputs"
         })
     }
 
-    const user = await User.create({
-        username: req.body.username,
-        password: req.body.password,
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
+    const user = await prisma.User.create({
+        data :  {
+                    username: req.body.username,
+                    email : req.body.email,
+                    password: req.body.password,
+                    firstName: req.body.firstName,
+                    lastName: req.body.lastName
+                },
+        select : {
+            Id : true
+        }
     })
-
-    const userid = user._id;
+    console.log(user);
+    const userid = user.Id;
     await Account.create({
         userId : userid,
         balance: 1 + Math.random() * 10000
