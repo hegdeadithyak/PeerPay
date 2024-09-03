@@ -1,11 +1,11 @@
-import { Bottombutton } from "../components/bottombutton";
-import { BottomFooter } from "../components/bottomfooter";
-import { Heading } from "../components/heading";
-import { InputBox } from "../components/inputbox";
-import { Subheading } from "../components/subheading";
-import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
+import { Heading } from "../components/heading";
+import { Subheading } from "../components/subheading";
+import { InputBox } from "../components/inputbox";
+import { Bottombutton } from "../components/bottombutton";
+import { BottomFooter } from "../components/bottomfooter";
+import { useNavigate } from "react-router-dom";
 
 export const Signup = () => {
   const [username, setUsername] = useState("");
@@ -14,23 +14,30 @@ export const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-
   
   const handleSignup = async () => {
-    try{
-      const response = await axios.post("http://localhost:3000/api/v1/user/signup",{},{params: {
-        username: username,
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-        password: password
-      }});
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/v1/user/signup",
+        {
+          username: username.trim(),
+          firstName: firstName.trim(),
+          lastName: lastName.trim(),
+          email: email.trim(),
+          password: password,
+        }
+      );
+
+      console.log("Signup successful:", response.data);
       localStorage.setItem("token", response.data.token);
       navigate("/dashboard");
-    }
-    catch (error) {
-      if (error.response.status === 411) {
-        alert("Email already taken/Incorrect inputs");
+    } catch (error) {
+      if (error.response && error.response.data) {
+        console.error("Error during signup:", error.response.data);
+        alert("Signup failed: " + error.response.data.message);
+      } else {
+        console.error("Error during signup:", error.message);
+        alert("Signup failed: " + error.message);
       }
     }
   };
@@ -42,44 +49,44 @@ export const Signup = () => {
           <Heading label={"Sign up"} />
           <Subheading label={"Enter your information to create an account"} />
           <InputBox
-            onChange={(e) => {
-              setUsername(e.target.value);
-            }}
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             placeholder="adithyahegdek"
             label={"Username"}
           />
           <InputBox
-            onChange={(e) => {
-              setFirstName(e.target.value);
-            }}
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
             placeholder="adithya"
             label={"Firstname"}
           />
           <InputBox
-            onChange={(e) => {
-              setLastName(e.target.value);
-            }}
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
             placeholder="hegde"
             label={"Lastname"}
           />
           <InputBox
-            onChange={(e) => {
-              setEmail(e.target.value);
-            }}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             placeholder="sample@gmail.com"
             label={"Email"}
           />
           <InputBox
-            onChange={(e) => {
-              setPassword(e.target.value);
-            }}
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             placeholder="123456"
             label={"Password"}
           />
           <div className="pt-4">
             <Bottombutton onClick={handleSignup} label={"Sign up"} />
           </div>
-          <BottomFooter label={"Already have an account?"} buttonText={"Sign in"} to={"/signin"} />
+          <BottomFooter
+            label={"Already have an account?"}
+            buttonText={"Sign in"}
+            to={"/signin"}
+          />
         </div>
       </div>
     </div>

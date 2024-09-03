@@ -10,61 +10,70 @@ const {PrismaClient} = require("@prisma/client");
 const prisma = new PrismaClient();
 
 const signupschema = zod.object({
-    username: zod.string().email(),
+    username: zod.string(),
+    email : zod.string().email(),
     password: zod.string(),
     firstName: zod.string(),
     lastName: zod.string()
 });
 
-router.post("/signup",async (req, res) => {
-    const body = req.body;
-    console.log(body);
-    const success = signupschema.safeParse(body);
+router.post("/signup", async (req, res) => {
+    const { success, error, data } = signupschema.safeParse(req.body);
     if (!success) {
+        return res.status(400).json({
+            message: "Invalid input",
+            errors: error.errors
+        });
+    }
+
+    try {
+        const existinguser = await prisma.user.findFirst({
+            where: {
+                email: data.email
+            },
+            select: {
+                id: true
+            }
+        });
+
+        if (existinguser) {
+            return res.status(409).json({
+                message: "Email already taken"
+            });
+        }
+
+        const user = await prisma.user.create({
+            data: {
+                username: data.username,
+                email: data.email,
+                password: data.password, 
+                firstName: data.firstName,
+                lastName: data.lastName
+            },
+            select: {
+                id: true
+            }
+        });
+
+        await prisma.account.create({
+            data: {
+                balance: Math.ceil(1 + Math.random() * 10000),
+                userId: user.id,
+            }
+        });
+
+        const token = jwt.sign({ id: user.id }, jwtsecret);
         return res.json({
-            message: "Invalid Email"
-        })
-    }
-    console.log(req.body.email);
-    const existinguser = await prisma.User.findUnique({
-        where: {
-          email: req.body.email
-        },
-        select: {
-          userid: true
-        }
-      });
-    
-    if(existinguser){
-        return res.status(411).json({
-            message: "Email already taken/Incorrect inputs"
-        })
-    }
+            message: "User Created",
+            token: token
+        });
 
-    const user = await prisma.User.create({
-        data :  {
-                    username: req.body.username,
-                    email : req.body.email,
-                    password: req.body.password,
-                    firstName: req.body.firstName,
-                    lastName: req.body.lastName
-                },
-        select : {
-            Id : true
-        }
-    })
-    console.log(user);
-    const userid = user.Id;
-    await Account.create({
-        userId : userid,
-        balance: 1 + Math.random() * 10000
-    })
-
-    const token = jwt.sign({ id: user._id }, jwtsecret);
-    return res.json({
-        message: "User created",
-        token : token
-    });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            message: "Internal server error"
+        });
+    }
 });
 
 const signinschema = zod.object({
@@ -81,14 +90,16 @@ router.post("/signin",async (req,res) => {
             message: "Invalid username or password"
         })
     }
-
-    const user = await User.findOne({
+    console.log(body);
+    const user = await prisma.user.findFirst({
+        where:{
         username : body.username,
         password : body.password
+        }
     })
 
     if(user){
-        const token = jwt.sign({ id: user._id }, jwtsecret);
+        const token = jwt.sign({ id: user.id }, jwtsecret);
         return res.status(200).json({
             message: "Signin success",
             token : token
@@ -117,7 +128,7 @@ router.put("/",authmiddleware, async (req,res)=>{
     }
 
     await User.updateOne(req.body,{
-        _id : req.userId
+        id : req.id
     })
 
     res.json({
@@ -125,30 +136,4 @@ router.put("/",authmiddleware, async (req,res)=>{
     })
 
 })
-
-router.get("/bulk", async (req, res) => {
-    const filter = req.query.filter || "";
-
-    const users = await User.find({
-        $or: [{
-            firstName: {
-                "$regex": filter
-            }
-        }, {
-            lastName: {
-                "$regex": filter
-            }
-        }]
-    })
-
-    res.json({
-        user: users.map(user => ({
-            username: user.username,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            _id: user._id
-        }))
-    })
-})
-
 module.exports = router;
