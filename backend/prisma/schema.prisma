@@ -14,22 +14,22 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  id        String  @id @default(uuid())
   email     String   @unique
   username String @unique
   firstName String?
   lastName  String?
   password  String
-  accounts  Account[] 
-
+  accounts  Account[]
+  friends   User[]   @relation("UserFriends")
+  friendOf  User[]   @relation("UserFriends") 
   @@map("users")
 }
 
 model Account {
   id       Int   @id @default(autoincrement())
   balance  Int
-  userId   Int
+  userId   String
   user     User  @relation(fields: [userId], references: [id])
-
   @@map("accounts") 
 }

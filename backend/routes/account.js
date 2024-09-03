@@ -1,12 +1,14 @@
 const express = require("express");
 const { authmiddleware } = require("../middleware");
-const mongoose  = require("mongoose")
+const { PrismaClient } = require("@prisma/client")
+
+const prisma = new PrismaClient();
 
 const router = express.Router();
 
 router.get("/balance", authmiddleware, async (req, res) => {
     try {
-        const account = await Account.findOne({ userId: req.userId });
+        const account = await prisma.account.findFirst({ userId: req.userId });
         console.log(account);
         if(account && account.balance){
             res.json({

@@ -117,6 +117,21 @@ const updatebodyschema = zod.object({
     lastName : zod.string().optional()
 })
 
+router.get("/",async (req,res)=>{
+    const body = req.body;
+
+    const username = await prisma.user.findFirst({
+        where : {
+            id : body.id
+        },
+        select : {
+            username : true
+        }
+    })
+
+    return res.json(username);
+})
+
 router.put("/",authmiddleware, async (req,res)=>{
     const body = req.body;
     const {success} = updatebodyschema.safeParse(body);
@@ -127,7 +142,7 @@ router.put("/",authmiddleware, async (req,res)=>{
         })
     }
 
-    await User.updateOne(req.body,{
+    await prisma.user.updateOne(req.body,{
         id : req.id
     })
 
