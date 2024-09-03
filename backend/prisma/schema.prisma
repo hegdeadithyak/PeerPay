@@ -1,0 +1,35 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://adithya_owner:RVExY4XJ7UfW@ep-misty-darkness-a184wynn.ap-southeast-1.aws.neon.tech/prisma_migrate_shadow_db_f81e1583-7d0e-4dae-9829-48cbfaa95c4c?sslmode=require"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  username String @unique
+  firstName String?
+  lastName  String?
+  password  String
+  accounts  Account[] 
+
+  @@map("users")
+}
+
+model Account {
+  id       Int   @id @default(autoincrement())
+  balance  Int
+  userId   Int
+  user     User  @relation(fields: [userId], references: [id])
+
+  @@map("accounts") 
+}
